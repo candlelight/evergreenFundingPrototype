@@ -79,13 +79,13 @@
         
         /* Hero Section */
         .hero {
-            min-height: 40vh;
+            min-height: 30vh;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             text-align: center;
-            padding: var(--space-xl) var(--space-md);
+            padding: var(--space-lg) var(--space-md);
             background: var(--pure-black);
         }
         
@@ -107,31 +107,6 @@
             max-width: 500px;
             color: var(--white);
             opacity: 0.9;
-        }
-        
-        /* Scroll indicator button */
-        .scroll-hint {
-            margin-top: var(--space-lg);
-            padding: var(--space-md) var(--space-xl);
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 30px;
-            color: var(--white);
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            gap: var(--space-sm);
-        }
-        
-        .scroll-hint:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-        
-        .scroll-hint svg {
-            width: 16px;
-            height: 16px;
         }
         
         /* Light Section */
@@ -564,13 +539,6 @@
     <section class="hero">
         <h1>Evergreen Fund Simulator</h1>
         <p>Explore how patient capital creates sustainable impact. Adjust the parameters and see how a revolving fund evolves over 10 years.</p>
-        
-        <button class="scroll-hint" onclick="document.querySelector('.light-section').scrollIntoView({behavior: 'smooth'})">
-            Adjust parameters
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-            </svg>
-        </button>
     </section>
     
     <section class="light-section">
@@ -931,16 +899,14 @@
             
             // Update AUM chart
             const aumChart = document.getElementById('aumChart');
-            const yearsToShow = [1, 2, 3, 5, 10];
-            const maxAUM = 30; // For scaling
-            
+            const maxAUM = 35; // For scaling
             aumChart.innerHTML = yearsToShow.map(y => {
                 const data = results.yearlyData[y - 1];
-                const height = (data.aum / maxAUM) * 150;
+                const height = Math.min((data.aum / maxAUM) * 100, 100);
                 return `
                     <div class="bar-group">
                         <span class="bar-value">$${Math.round(data.aum)}M</span>
-                        <div class="bar" style="height: ${Math.max(height, 20)}px;"></div>
+                        <div class="bar" style="height: ${Math.max(height, 15)}px;"></div>
                         <span class="bar-label">Year ${y}</span>
                     </div>
                 `;
