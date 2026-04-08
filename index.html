@@ -376,6 +376,121 @@
         .bar.base { background: #1a73e8; }
         .bar.bull { background: #188038; }
         
+        /* Tranche Cards */
+        .tranche-flow {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: var(--space-md);
+            flex-wrap: wrap;
+        }
+        
+        .tranche-card {
+            flex: 1;
+            min-width: 180px;
+            padding: var(--space-lg);
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .tranche-card.catalytic {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--white);
+        }
+        
+        .tranche-card.patient {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: var(--white);
+        }
+        
+        .tranche-card.market {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: var(--near-black);
+        }
+        
+        .tranche-label {
+            font-family: var(--font-display);
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: var(--space-xs);
+        }
+        
+        .tranche-source {
+            font-size: 12px;
+            opacity: 0.9;
+            margin-bottom: var(--space-sm);
+        }
+        
+        .tranche-return {
+            font-family: var(--font-display);
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: var(--space-xs);
+        }
+        
+        .tranche-role {
+            font-size: 11px;
+            opacity: 0.85;
+            line-height: 1.3;
+        }
+        
+        .tranche-arrow {
+            font-size: 24px;
+            color: var(--black-48);
+        }
+        
+        /* Flow Diagram */
+        .flow-diagram {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+        
+        .flow-step {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            padding: var(--space-md);
+            background: var(--light-gray);
+            border-radius: 8px;
+            width: 100%;
+            max-width: 500px;
+        }
+        
+        .flow-number {
+            width: 32px;
+            height: 32px;
+            background: var(--apple-blue);
+            color: var(--white);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+        
+        .flow-title {
+            font-weight: 600;
+            color: var(--near-black);
+            font-size: 15px;
+            width: 80px;
+            flex-shrink: 0;
+        }
+        
+        .flow-desc {
+            font-size: 13px;
+            color: var(--black-80);
+        }
+        
+        .flow-arrow {
+            font-size: 20px;
+            color: var(--apple-blue);
+            font-weight: 300;
+        }
+        
         .bar-label {
             font-size: 12px;
             color: var(--black-48);
@@ -582,6 +697,78 @@
                 <div class="metric-item">
                     <div class="label">Breakeven Year</div>
                     <div class="number" id="breakevenYear">Year 5</div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <div class="chart-card" style="margin-top: var(--space-xl);">
+                <h3>How Investors Get Paid</h3>
+                <p style="color: var(--black-80); margin-bottom: var(--space-lg); font-size: 14px;">The fund has three tiers of investors, each with different return expectations. Returns come from profits, not principal.</p>
+                
+                <div class="tranche-flow">
+                    <div class="tranche-card catalytic">
+                        <div class="tranche-label">Catalytic</div>
+                        <div class="tranche-source">Foundations, DAFs</div>
+                        <div class="tranche-return">0–2%</div>
+                        <div class="tranche-role">First-loss capital — absorbs early failures</div>
+                    </div>
+                    <div class="tranche-arrow">→</div>
+                    <div class="tranche-card patient">
+                        <div class="tranche-label">Patient</div>
+                        <div class="tranche-source">Family Offices, HNWIs</div>
+                        <div class="tranche-return">4–8%</div>
+                        <div class="tranche-role">Mission-driven, below-market returns</div>
+                    </div>
+                    <div class="tranche-arrow">→</div>
+                    <div class="tranche-card market">
+                        <div class="tranche-label">Market-Rate</div>
+                        <div class="tranche-source">Institutional LPs</div>
+                        <div class="tranche-return">10–14%</div>
+                        <div class="tranche-role">Traditional VC-level returns</div>
+                    </div>
+                </div>
+                
+                <div class="fee-explain" style="margin-top: var(--space-lg); padding: var(--space-md); background: var(--light-gray); border-radius: 8px;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md);">
+                        <div>
+                            <div style="font-weight: 600; color: var(--near-black); font-size: 14px;">Management Fee</div>
+                            <div style="color: var(--black-80); font-size: 13px;">1.5–2% of AUM annually</div>
+                        </div>
+                        <div>
+                            <div style="font-weight: 600; color: var(--near-black); font-size: 14px;">Carried Interest</div>
+                            <div style="color: var(--black-80); font-size: 13px;">10–20% of profits after investors hit return target</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="chart-card" style="margin-top: var(--space-xl);">
+                <h3>How the Fund Makes Money</h3>
+                <div class="flow-diagram">
+                    <div class="flow-step">
+                        <div class="flow-number">1</div>
+                        <div class="flow-title">Deploy</div>
+                        <div class="flow-desc">Capital goes to founders (grants, revenue-share, debt)</div>
+                    </div>
+                    <div class="flow-arrow">↓</div>
+                    <div class="flow-step">
+                        <div class="flow-number">2</div>
+                        <div class="flow-title">Return</div>
+                        <div class="flow-desc">Founders repay from revenue, exits, or follow-on funding</div>
+                    </div>
+                    <div class="flow-arrow">↓</div>
+                    <div class="flow-step">
+                        <div class="flow-number">3</div>
+                        <div class="flow-title">Recycle</div>
+                        <div class="flow-desc">Repayments go back into the pool, not to investors</div>
+                    </div>
+                    <div class="flow-arrow">↓</div>
+                    <div class="flow-step">
+                        <div class="flow-number">4</div>
+                        <div class="flow-title">Reinvest</div>
+                        <div class="flow-desc">New founders get funded. The cycle continues.</div>
+                    </div>
                 </div>
             </div>
         </div>
