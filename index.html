@@ -897,38 +897,66 @@
             document.getElementById('recycledCapital').textContent = formatCurrency(Math.round(results.recycledCapital));
             document.getElementById('breakevenYear').textContent = 'Year ' + (typeof results.breakevenYear === 'number' ? results.breakevenYear : '5');
             
-            // Update AUM chart
+            // Update AUM chart with animation
             const aumChart = document.getElementById('aumChart');
-            const maxAUM = 35; // For scaling
-            aumChart.innerHTML = yearsToShow.map(y => {
-                const data = results.yearlyData[y - 1];
-                const height = Math.min((data.aum / maxAUM) * 100, 100);
-                return `
-                    <div class="bar-group">
-                        <span class="bar-value">$${Math.round(data.aum)}M</span>
-                        <div class="bar" style="height: ${Math.max(height, 15)}px;"></div>
+            const yearsToShow = [1, 2, 3, 5, 10];
+            const maxAUM = 35;
+            
+            // Initialize chart if needed
+            if (!aumChart.dataset.initialized) {
+                aumChart.innerHTML = yearsToShow.map(y => `
+                    <div class="bar-group" data-year="${y}">
+                        <span class="bar-value"></span>
+                        <div class="bar"></div>
                         <span class="bar-label">Year ${y}</span>
                     </div>
-                `;
-            }).join('');
+                `).join('');
+                aumChart.dataset.initialized = "true";
+            }
             
-            // Update self-sufficiency chart
+            // Update existing bars with animation
+            const aumBars = aumChart.querySelectorAll('.bar-group');
+            yearsToShow.forEach((y, i) => {
+                const data = results.yearlyData[y - 1];
+                const height = Math.min((data.aum / maxAUM) * 100, 100);
+                const barGroup = aumBars[i];
+                if (barGroup) {
+                    barGroup.querySelector('.bar-value').textContent = '$' + Math.round(data.aum) + 'M';
+                    barGroup.querySelector('.bar').style.height = Math.max(height, 15) + 'px';
+                }
+            });
+            
+            // Update self-sufficiency chart with animation
             const sufficiencyChart = document.getElementById('sufficiencyChart');
-            sufficiencyChart.innerHTML = yearsToShow.map(y => {
+            
+            if (!sufficiencyChart.dataset.initialized) {
+                sufficiencyChart.innerHTML = yearsToShow.map(y => `
+                    <div class="bar-group" data-year="${y}">
+                        <span class="bar-value"></span>
+                        <div class="bar"></div>
+                        <span class="bar-label">Year ${y}</span>
+                    </div>
+                `).join('');
+                sufficiencyChart.dataset.initialized = "true";
+            }
+            
+            // Update existing bars with animation
+            const suffBars = sufficiencyChart.querySelectorAll('.bar-group');
+            yearsToShow.forEach((y, i) => {
                 const data = results.yearlyData[y - 1];
                 const height = Math.min(data.sufficiency * 70, 100);
                 let color = '#d93025';
                 if (data.sufficiency >= 1.0) color = '#188038';
                 else if (data.sufficiency >= 0.7) color = '#f9ab00';
                 
-                return `
-                    <div class="bar-group">
-                        <span class="bar-value">${data.sufficiency.toFixed(1)}x</span>
-                        <div class="bar" style="height: ${Math.max(height, 15)}px; background: ${color};"></div>
-                        <span class="bar-label">Year ${y}</span>
-                    </div>
-                `;
-            }).join('');
+                const barGroup = suffBars[i];
+                if (barGroup) {
+                    barGroup.querySelector('.bar-value').textContent = data.sufficiency.toFixed(1) + 'x';
+                    const bar = barGroup.querySelector('.bar');
+                    bar.style.height = Math.max(height, 15) + 'px';
+                    bar.style.background = color;
+                }
+            });
         }
         
         // Event listeners
