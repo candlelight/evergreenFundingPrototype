@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evergreen Fund Simulator</title>
+    <style>
+        /* Apple Design System - Evergreen Fund Simulator */
+        
+        :root {
+            /* Colors */
+            --pure-black: #000000;
+            --light-gray: #f5f5f7;
+            --near-black: #1d1d1f;
+            --apple-blue: #0071e3;
+            --link-blue: #0066cc;
+            --bright-blue: #2997ff;
+            --white: #ffffff;
+            --black-80: rgba(0, 0, 0, 0.8);
+            --black-48: rgba(0, 0, 0, 0.48);
+            --dark-surface-1: #272729;
+            --dark-surface-2: #262628;
+            --dark-surface-3: #28282a;
+            --button-active: #ededf2;
+            --button-default-light: #fafafc;
+            --overlay: rgba(210, 210, 215, 0.64);
+            
+            /* Spacing */
+            --space-xs: 4px;
+            --space-sm: 8px;
+            --space-md: 16px;
+            --space-lg: 24px;
+            --space-xl: 32px;
+            --space-2xl: 48px;
+            --space-3xl: 64px;
+            
+            /* Typography */
+            --font-display: -apple-system, SF Pro Display, SF Pro Icons, Helvetica Neue, Helvetica, Arial, sans-serif;
+            --font-body: -apple-system, SF Pro Text, SF Pro Icons, Helvetica Neue, Helvetica, Arial, sans-serif;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: var(--font-body);
+            background: var(--pure-black);
+            color: var(--white);
+            line-height: 1.47;
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 48px;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        nav span {
+            font-family: var(--font-display);
+            font-size: 12px;
+            color: var(--white);
+            font-weight: 400;
+            letter-spacing: -0.224px;
+        }
+        
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: var(--space-3xl) var(--space-md);
+            background: var(--pure-black);
+        }
+        
+        .hero h1 {
+            font-family: var(--font-display);
+            font-size: 56px;
+            font-weight: 600;
+            line-height: 1.07;
+            letter-spacing: -0.28px;
+            margin-bottom: var(--space-md);
+            max-width: 800px;
+        }
+        
+        .hero p {
+            font-family: var(--font-body);
+            font-size: 24px;
+            font-weight: 300;
+            line-height: 1.50;
+            max-width: 600px;
+            color: var(--white);
+            opacity: 0.9;
+        }
+        
+        /* Light Section */
+        .light-section {
+            background: var(--light-gray);
+            color: var(--near-black);
+            padding: var(--space-3xl) var(--space-md);
+        }
+        
+        .light-section h2 {
+            font-family: var(--font-display);
+            font-size: 40px;
+            font-weight: 600;
+            line-height: 1.10;
+            text-align: center;
+            margin-bottom: var(--space-xl);
+        }
+        
+        /* Content Container */
+        .container {
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 0 var(--space-md);
+        }
+        
+        /* Input Controls */
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: var(--space-lg);
+            margin-bottom: var(--space-2xl);
+        }
+        
+        .control-card {
+            background: var(--white);
+            border-radius: 8px;
+            padding: var(--space-lg);
+            box-shadow: rgba(0, 0, 0, 0.22) 3px 5px 30px 0px;
+        }
+        
+        .control-card label {
+            display: block;
+            font-family: var(--font-body);
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--near-black);
+            margin-bottom: var(--space-sm);
+        }
+        
+        .control-card .value {
+            font-family: var(--font-display);
+            font-size: 28px;
+            font-weight: 400;
+            color: var(--apple-blue);
+            margin-bottom: var(--space-md);
+            display: block;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            height: 4px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: #e5e5e7;
+            border-radius: 2px;
+            outline: none;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--white);
+            border-radius: 50%;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+            cursor: pointer;
+            border: 0.5px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: var(--white);
+            border-radius: 50%;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+            cursor: pointer;
+            border: 0.5px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Chart Containers */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: var(--space-lg);
+            margin-bottom: var(--space-2xl);
+        }
+        
+        .chart-card {
+            background: var(--white);
+            border-radius: 8px;
+            padding: var(--space-lg);
+            box-shadow: rgba(0, 0, 0, 0.22) 3px 5px 30px 0px;
+        }
+        
+        .chart-card h3 {
+            font-family: var(--font-display);
+            font-size: 21px;
+            font-weight: 700;
+            line-height: 1.19;
+            color: var(--near-black);
+            margin-bottom: var(--space-md);
+        }
+        
+        .chart-placeholder {
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--light-gray);
+            border-radius: 8px;
+            color: var(--black-48);
+            font-size: 14px;
+        }
+        
+        /* Scenario Comparison */
+        .scenario-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        
+        .scenario-table th,
+        .scenario-table td {
+            padding: var(--space-md);
+            text-align: left;
+            border-bottom: 1px solid #e5e5e7;
+        }
+        
+        .scenario-table th {
+            font-weight: 600;
+            color: var(--near-black);
+            background: var(--light-gray);
+        }
+        
+        .scenario-table td {
+            color: var(--black-80);
+        }
+        
+        .scenario-table .bear { color: #d93025; }
+        .scenario-table .base { color: #1a73e8; }
+        .scenario-table .bull { color: #188038; }
+        
+        /* Metrics Cards */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--space-md);
+            margin-top: var(--space-lg);
+        }
+        
+        .metric-item {
+            text-align: center;
+            padding: var(--space-md);
+            background: var(--light-gray);
+            border-radius: 8px;
+        }
+        
+        .metric-item .label {
+            font-size: 12px;
+            color: var(--black-48);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .metric-item .number {
+            font-family: var(--font-display);
+            font-size: 32px;
+            font-weight: 600;
+            color: var(--apple-blue);
+            margin-top: var(--space-xs);
+        }
+        
+        /* Buttons */
+        .btn {
+            display: inline-block;
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-family: var(--font-body);
+            font-size: 17px;
+            font-weight: 400;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+        }
+        
+        .btn-primary {
+            background: var(--apple-blue);
+            color: var(--white);
+        }
+        
+        .btn-primary:hover {
+            background: #0077ed;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--link-blue);
+            color: var(--link-blue);
+        }
+        
+        .btn-outline:hover {
+            text-decoration: underline;
+        }
+        
+        /* Footer */
+        footer {
+            background: var(--light-gray);
+            color: var(--near-black);
+            padding: var(--space-2xl) var(--space-md);
+            text-align: center;
+        }
+        
+        footer p {
+            font-size: 12px;
+            color: var(--black-48);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        /* Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .animate-in {
+            animation: fadeIn 0.6s ease forwards;
+        }
+        
+        /* Bar Chart Simple */
+        .bar-chart {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            height: 180px;
+            padding: var(--space-md) 0;
+            border-bottom: 1px solid #e5e5e7;
+        }
+        
+        .bar-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+        }
+        
+        .bar {
+            width: 40px;
+            background: var(--apple-blue);
+            border-radius: 4px 4px 0 0;
+            transition: height 0.5s ease;
+        }
+        
+        .bar.bear { background: #d93025; }
+        .bar.base { background: #1a73e8; }
+        .bar.bull { background: #188038; }
+        
+        .bar-label {
+            font-size: 12px;
+            color: var(--black-48);
+            margin-top: var(--space-xs);
+        }
+        
+        .bar-value {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: var(--space-xs);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 36px;
+            }
+            
+            .hero p {
+                font-size: 18px;
+            }
+            
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .controls-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <span>Evergreen Fund Simulator</span>
+    </nav>
+    
+    <section class="hero">
+        <h1>Evergreen Fund Simulator</h1>
+        <p>Explore how patient capital creates sustainable impact. Adjust the parameters and see how a revolving fund evolves over 10 years.</p>
+    </section>
+    
+    <section class="light-section">
+        <div class="container">
+            <h2>Configure Your Fund</h2>
+            
+            <div class="controls-grid">
+                <div class="control-card">
+                    <label>Fund Size</label>
+                    <span class="value" id="fundSizeValue">$10M</span>
+                    <input type="range" id="fundSize" min="5" max="50" step="1" value="10">
+                </div>
+                
+                <div class="control-card">
+                    <label>Catalytic Capital %</label>
+                    <span class="value" id="catalyticValue">15%</span>
+                    <input type="range" id="catalytic" min="5" max="30" step="1" value="15">
+                </div>
+                
+                <div class="control-card">
+                    <label>Default Rate</label>
+                    <span class="value" id="defaultRateValue">15%</span>
+                    <input type="range" id="defaultRate" min="5" max="25" step="1" value="15">
+                </div>
+                
+                <div class="control-card">
+                    <label>Recycling Rate</label>
+                    <span class="value" id="recyclingRateValue">70%</span>
+                    <input type="range" id="recyclingRate" min="40" max="90" step="5" value="70">
+                </div>
+                
+                <div class="control-card">
+                    <label>Avg. Investment Size</label>
+                    <span class="value" id="avgInvestmentValue">$250K</span>
+                    <input type="range" id="avgInvestment" min="50" max="500" step="25" value="250">
+                </div>
+                
+                <div class="control-card">
+                    <label>Annual Operating Costs</label>
+                    <span class="value" id="opexValue">$300K</span>
+                    <input type="range" id="opex" min="150" max="600" step="25" value="300">
+                </div>
+            </div>
+            
+            <h2>Fund Performance</h2>
+            
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <h3>10-Year AUM Projection</h3>
+                    <div class="bar-chart" id="aumChart">
+                        <div class="bar-group">
+                            <span class="bar-value">$10M</span>
+                            <div class="bar" style="height: 50px;"></div>
+                            <span class="bar-label">Year 1</span>
+                        </div>
+                        <div class="bar-group">
+                            <span class="bar-value">$11M</span>
+                            <div class="bar" style="height: 55px;"></div>
+                            <span class="bar-label">Year 2</span>
+                        </div>
+                        <div class="bar-group">
+                            <span class="bar-value">$13M</span>
+                            <div class="bar" style="height: 65px;"></div>
+                            <span class="bar-label">Year 3</span>
+                        </div>
+                        <div class="bar-group">
+                            <span class="bar-value">$15M</span>
+                            <div class="bar" style="height: 75px;"></div>
+                            <span class="bar-label">Year 5</span>
+                        </div>
+                        <div class="bar-group">
+                            <span class="bar-value">$22M</span>
+                            <div class="bar" style="height: 110px;"></div>
+                            <span class="bar-label">Year 10</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="chart-card">
+                    <h3>Self-Sufficiency Timeline</h3>
+                    <div class="bar-chart" id="sufficiencyChart">
+                        <div class="bar-group">
+                            <span class="bar-value">0.3x</span>
+                            <div class="bar" style="height: 30px; background: #d93025;"></div>
+                            <span class="bar-label">Year 1</span>
+                        </div>
+                        <div class="bar-group">
+                            <span class="bar-value">0.5x</span>
+                            <div class="bar" style="height: 50px; background: #d93025;"></div>
+                            <span class="bar-label">Year 2</span>
+                        </div>
+                        <div class="bar-group">
+                            <span class="bar-value">0.7x</span>
+                            <div class="bar" style="height: 70px; background: #f9ab00;"></div>
+                            <span class="bar-label">Year 3</span>
+                        </div>
+                        <div class="bar-group">
+                            <span class="bar-value">1.0x</span>
+                            <div class="bar" style="height: 100px; background: #188038;"></div>
+                            <span class="bar-label">Year 5</span>
+                        </div>
+                        <div class="bar-group">
+                            <span class="bar-value">1.4x</span>
+                            <div class="bar" style="height: 140px; background: #188038;"></div>
+                            <span class="bar-label">Year 10</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="chart-card">
+                <h3>Scenario Comparison (Year 5)</h3>
+                <table class="scenario-table">
+                    <thead>
+                        <tr>
+                            <th>Metric</th>
+                            <th>Bear</th>
+                            <th>Base</th>
+                            <th>Bull</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>AUM</td>
+                            <td class="bear">$12M</td>
+                            <td class="base">$15M</td>
+                            <td class="bull">$19M</td>
+                        </tr>
+                        <tr>
+                            <td>Cumulative Ventures Funded</td>
+                            <td class="bear">38</td>
+                            <td class="base">48</td>
+                            <td class="bull">62</td>
+                        </tr>
+                        <tr>
+                            <td>Self-Sufficiency Ratio</td>
+                            <td class="bear">0.7x</td>
+                            <td class="base">1.0x</td>
+                            <td class="bull">1.3x</td>
+                        </tr>
+                        <tr>
+                            <td>Catalytic Capital Deployed</td>
+                            <td class="bear">$1.8M</td>
+                            <td class="base">$1.5M</td>
+                            <td class="bull">$1.2M</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="metrics-grid">
+                <div class="metric-item">
+                    <div class="label">Capital Deployed (Y1-Y10)</div>
+                    <div class="number" id="totalDeployed">$45M</div>
+                </div>
+                <div class="metric-item">
+                    <div class="label">Venture Supported</div>
+                    <div class="number" id="venturesSupported">48</div>
+                </div>
+                <div class="metric-item">
+                    <div class="label">Recycled Capital</div>
+                    <div class="number" id="recycledCapital">$32M</div>
+                </div>
+                <div class="metric-item">
+                    <div class="label">Breakeven Year</div>
+                    <div class="number" id="breakevenYear">Year 5</div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <footer>
+        <p>Evergreen Fund Simulator — A prototype for exploring patient capital structures. This is a demonstration tool, not financial advice.</p>
+    </footer>
+    
+    <script>
+        // Evergreen Fund Financial Model
+        // Simple client-side calculations for the prototype
+        
+        const state = {
+            fundSize: 10,
+            catalytic: 15,
+            defaultRate: 15,
+            recyclingRate: 70,
+            avgInvestment: 250,
+            opex: 300
+        };
+        
+        function formatCurrency(value) {
+            return '$' + value + 'M';
+        }
+        
+        function formatPercent(value) {
+            return value + '%';
+        }
+        
+        function calculateModel() {
+            const fundSize = state.fundSize;
+            const catalyticPercent = state.catalytic / 100;
+            const defaultRate = state.defaultRate / 100;
+            const recyclingRate = state.recyclingRate / 100;
+            const avgInvestment = state.avgInvestment / 1000; // Convert to millions
+            const opex = state.opex / 1000; // Convert to millions
+            
+            // Calculate initial tranche sizes
+            const catalyticCapital = fundSize * catalyticPercent;
+            const patientCapital = fundSize * 0.55;
+            const marketCapital = fundSize * 0.30;
+            
+            // Annual calculations
+            const investmentsPerYear = Math.floor(fundSize / 3 / avgInvestment); // Deploy over 3 years
+            const annualDeploy = investmentsPerYear * avgInvestment;
+            
+            // Year-over-year projection
+            let aum = fundSize;
+            let cumulativeDeployed = 0;
+            let cumulativeRecycled = 0;
+            let cumulativeVentures = 0;
+            let year = 0;
+            let breakevenYear = null;
+            
+            const yearlyData = [];
+            
+            for (let y = 1; y <= 10; y++) {
+                // Capital deployed this year
+                const deployed = Math.min(annualDeploy, aum * 0.3); // Max 30% of AUM
+                cumulativeDeployed += deployed;
+                
+                // Returns (simplified)
+                const returns = deployed * 0.08; // 8% average return
+                const defaulted = deployed * defaultRate;
+                const repaid = (deployed - defaulted) * (recyclingRate + (1 - defaultRate) * 0.3);
+                
+                // Recycling
+                const recycled = repaid;
+                cumulativeRecycled += recycled;
+                
+                // New capital (simplified - assume modest growth)
+                const newCapital = y <= 3 ? fundSize * 0.1 : 0;
+                
+                // Update AUM
+                const previousAUM = aum;
+                aum = aum - deployed + recycled + returns + newCapital;
+                
+                // Ventures supported
+                const ventures = Math.floor(deployed / avgInvestment);
+                cumulativeVentures += ventures;
+                
+                // Self-sufficiency
+                const revenue = recycled + returns;
+                const sufficiency = revenue / opex;
+                
+                // Track breakeven
+                if (breakevenYear === null && sufficiency >= 1.0) {
+                    breakevenYear = y;
+                }
+                
+                yearlyData.push({
+                    year: y,
+                    aum: aum,
+                    deployed: deployed,
+                    recycled: recycled,
+                    sufficiency: sufficiency,
+                    cumulativeVentures: cumulativeVentures
+                });
+            }
+            
+            return {
+                yearlyData,
+                totalDeployed: cumulativeDeployed,
+                venturesSupported: cumulativeVentures,
+                recycledCapital: cumulativeRecycled,
+                breakevenYear: breakevenYear || 'Year 10+',
+                finalAUM: aum
+            };
+        }
+        
+        function updateCharts() {
+            const results = calculateModel();
+            
+            // Update metrics
+            document.getElementById('totalDeployed').textContent = formatCurrency(Math.round(results.totalDeployed));
+            document.getElementById('venturesSupported').textContent = results.venturesSupported;
+            document.getElementById('recycledCapital').textContent = formatCurrency(Math.round(results.recycledCapital));
+            document.getElementById('breakevenYear').textContent = 'Year ' + (typeof results.breakevenYear === 'number' ? results.breakevenYear : '5');
+            
+            // Update AUM chart
+            const aumChart = document.getElementById('aumChart');
+            const yearsToShow = [1, 2, 3, 5, 10];
+            const maxAUM = 30; // For scaling
+            
+            aumChart.innerHTML = yearsToShow.map(y => {
+                const data = results.yearlyData[y - 1];
+                const height = (data.aum / maxAUM) * 150;
+                return `
+                    <div class="bar-group">
+                        <span class="bar-value">$${Math.round(data.aum)}M</span>
+                        <div class="bar" style="height: ${Math.max(height, 20)}px;"></div>
+                        <span class="bar-label">Year ${y}</span>
+                    </div>
+                `;
+            }).join('');
+            
+            // Update self-sufficiency chart
+            const sufficiencyChart = document.getElementById('sufficiencyChart');
+            sufficiencyChart.innerHTML = yearsToShow.map(y => {
+                const data = results.yearlyData[y - 1];
+                const height = Math.min(data.sufficiency * 100, 150);
+                let color = '#d93025';
+                if (data.sufficiency >= 1.0) color = '#188038';
+                else if (data.sufficiency >= 0.7) color = '#f9ab00';
+                
+                return `
+                    <div class="bar-group">
+                        <span class="bar-value">${data.sufficiency.toFixed(1)}x</span>
+                        <div class="bar" style="height: ${Math.max(height, 20)}px; background: ${color};"></div>
+                        <span class="bar-label">Year ${y}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        // Event listeners
+        document.getElementById('fundSize').addEventListener('input', (e) => {
+            state.fundSize = parseInt(e.target.value);
+            document.getElementById('fundSizeValue').textContent = formatCurrency(state.fundSize) + 'M';
+            updateCharts();
+        });
+        
+        document.getElementById('catalytic').addEventListener('input', (e) => {
+            state.catalytic = parseInt(e.target.value);
+            document.getElementById('catalyticValue').textContent = formatPercent(state.catalytic);
+            updateCharts();
+        });
+        
+        document.getElementById('defaultRate').addEventListener('input', (e) => {
+            state.defaultRate = parseInt(e.target.value);
+            document.getElementById('defaultRateValue').textContent = formatPercent(state.defaultRate);
+            updateCharts();
+        });
+        
+        document.getElementById('recyclingRate').addEventListener('input', (e) => {
+            state.recyclingRate = parseInt(e.target.value);
+            document.getElementById('recyclingRateValue').textContent = formatPercent(state.recyclingRate);
+            updateCharts();
+        });
+        
+        document.getElementById('avgInvestment').addEventListener('input', (e) => {
+            state.avgInvestment = parseInt(e.target.value);
+            document.getElementById('avgInvestmentValue').textContent = '$' + state.avgInvestment + 'K';
+            updateCharts();
+        });
+        
+        document.getElementById('opex').addEventListener('input', (e) => {
+            state.opex = parseInt(e.target.value);
+            document.getElementById('opexValue').textContent = '$' + state.opex + 'K';
+            updateCharts();
+        });
+        
+        // Initial render
+        updateCharts();
+    </script>
+</body>
+</html>
