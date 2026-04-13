@@ -632,47 +632,52 @@
             
             // Year-over-year projection
             let aum = fundSize;
-            let cumulativeDeployed = 0;
+            let totalInvested = 0; // Cumulative capital that's been invested (still working)
             let cumulativeRecycled = 0;
             let cumulativeVentures = 0;
-            let year = 0;
             let breakevenYear = null;
             
             const yearlyData = [];
             
             for (let y = 1; y <= 10; y++) {
-                // Capital deployed this year
-                const deployed = Math.min(annualDeploy, aum * 0.3); // Max 30% of AUM
-                cumulativeDeployed += deployed;
+                // Capital deployed this year (cap at 15% of AUM to preserve capital)
+                const maxDeploy = aum * 0.15;
+                const deployed = Math.min(annualDeploy, maxDeploy);
                 
-                // Returns (simplified)
-                const returns = deployed * 0.08; // 8% average return
+                // Track total invested portfolio (deployed capital still working)
+                totalInvested += deployed;
+                
+                // Returns (on total portfolio, not just new deployments)
+                const returns = totalInvested * 0.05; // 5% return on total portfolio
                 const defaulted = deployed * defaultRate;
                 const repaid = (deployed - defaulted) * (recyclingRate + (1 - defaultRate) * 0.3);
                 
-                // Recycling
+                // Recycling (returns capital to AUM)
                 const recycled = repaid;
                 cumulativeRecycled += recycled;
                 
-                // New capital (simplified - assume modest growth)
+                // Remove matured investments from portfolio (those returning this year)
+                totalInvested = totalInvested - deployed + (deployed - defaulted);
+                
+                // New capital (simplified - assume modest growth from fundraising)
                 const newCapital = y <= 3 ? fundSize * 0.1 : 0;
                 
-                // Update AUM
+                // Update AUM: prior AUM + recycled + returns - defaults + new capital
                 const previousAUM = aum;
-                aum = aum - deployed + recycled + returns + newCapital;
+                aum = aum + recycled + returns - defaulted + newCapital;
                 
                 // Ventures supported
                 const ventures = Math.floor(deployed / avgInvestment);
                 cumulativeVentures += ventures;
                 
-               // Self-sufficiency (fixed)
-               const returnRate = 0;
-               const managementFeeRate = 0.01;
-               const maturePortfolio = deployed * Math.min(y / 3, 1);
-               const netReturns = maturePortfolio * returnRate * (1 - defaultRate);
-               const managementFee = previousAUM * managementFeeRate;
-               const totalIncome = netReturns + managementFee;
-               const sufficiency = totalIncome / opex;
+                // Self-sufficiency (on cumulative portfolio)
+                const returnRate = 0.05;
+                const managementFeeRate = 0.01;
+                const maturePortfolio = totalInvested * Math.min(y / 5, 1); // Takes 5 years to fully mature
+                const netReturns = maturePortfolio * returnRate * (1 - defaultRate);
+                const managementFee = previousAUM * managementFeeRate;
+                const totalIncome = netReturns + managementFee;
+                const sufficiency = totalIncome / opex;
                 
                 // Track breakeven
                 if (breakevenYear === null && sufficiency >= 1.0) {
@@ -691,7 +696,7 @@
             
             return {
                 yearlyData,
-                totalDeployed: cumulativeDeployed,
+                totalDeployed: yearlyData.reduce((sum, d) => sum + d.deployed, 0),
                 venturesSupported: cumulativeVentures,
                 recycledCapital: cumulativeRecycled,
                 breakevenYear: breakevenYear || 'Year 10+',
