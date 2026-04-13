@@ -664,9 +664,14 @@
                 const ventures = Math.floor(deployed / avgInvestment);
                 cumulativeVentures += ventures;
                 
-                // Self-sufficiency
-                const revenue = recycled + returns;
-                const sufficiency = revenue / opex;
+               // Self-sufficiency (fixed)
+               const returnRate = 0.08;
+               const managementFeeRate = 0.02;
+               const maturePortfolio = deployed * Math.min(y / 3, 1);
+               const netReturns = maturePortfolio * returnRate * (1 - defaultRate);
+               const managementFee = previousAUM * managementFeeRate;
+               const totalIncome = netReturns + managementFee;
+               const sufficiency = totalIncome / opex;
                 
                 // Track breakeven
                 if (breakevenYear === null && sufficiency >= 1.0) {
