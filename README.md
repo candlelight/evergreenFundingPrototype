@@ -1,4 +1,4 @@
-**Institutional LP – One‑Pager**
+**Institutional LP – One‑Pager**   
 
 ---
 
