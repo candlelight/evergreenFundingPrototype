@@ -358,6 +358,7 @@
             height: 220px;
             padding: var(--space-lg) var(--space-md);
             border-bottom: 1px solid #e5e5e7;
+            overflow: hidden;
         }
         
         .bar-group {
@@ -717,11 +718,11 @@
             // Update AUM chart
             const aumChart = document.getElementById('aumChart');
             const yearsToShow = [1, 2, 3, 5, 10];
-            const maxAUM = 20; // For scaling
+            const maxAUM = 40; // For scaling (higher to fit $37M in Year 10)
 
             aumChart.innerHTML = yearsToShow.map(y => {
                 const data = results.yearlyData[y - 1];
-                const height = (data.aum / maxAUM) * 150;
+                const height = (data.aum / maxAUM) * 220;
                 return `
                     <div class="bar-group">
                         <span class="bar-value">$${Math.round(data.aum)}M</span>
@@ -735,7 +736,7 @@
             const sufficiencyChart = document.getElementById('sufficiencyChart');
             sufficiencyChart.innerHTML = yearsToShow.map(y => {
                 const data = results.yearlyData[y - 1];
-                const height = Math.min(data.sufficiency * 100, 150);
+                const height = Math.min(data.sufficiency * 150, 220);
                 let color = '#d93025';
                 if (data.sufficiency >= 1.0) color = '#188038';
                 else if (data.sufficiency >= 0.7) color = '#f9ab00';
