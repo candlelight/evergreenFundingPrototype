@@ -356,7 +356,7 @@
             align-items: flex-end;
             justify-content: space-around;
             height: 220px;
-            padding: 20px var(--space-md);
+            padding: 40px var(--space-md) 20px var(--space-md);
             overflow: hidden;
         }
         
@@ -381,7 +381,7 @@
         .bar-label {
             font-size: 12px;
             color: var(--black-48);
-            margin-top: var(--space-xs);
+            margin-bottom: 10px;
         }
 
         .bar-value {
@@ -724,9 +724,9 @@
                 const height = (data.aum / maxAUM) * 220;
                 return `
                     <div class="bar-group">
+                        <span class="bar-label">Year ${y}</span>
                         <span class="bar-value">$${Math.round(data.aum)}M</span>
                         <div class="bar" style="height: ${Math.max(height, 20)}px;"></div>
-                        <span class="bar-label">Year ${y}</span>
                     </div>
                 `;
             }).join('');
@@ -742,9 +742,9 @@
 
                 return `
                     <div class="bar-group">
+                        <span class="bar-label">Year ${y}</span>
                         <span class="bar-value">${data.sufficiency.toFixed(1)}x</span>
                         <div class="bar" style="height: ${Math.max(height, 20)}px; background: ${color};"></div>
-                        <span class="bar-label">Year ${y}</span>
                     </div>
                 `;
             }).join('');
