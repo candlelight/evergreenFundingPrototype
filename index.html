@@ -571,6 +571,13 @@
                 </div>
                 
                 <div class="control-card">
+                    <label>Acceleration Subsidy %</label>
+                    <span class="value" id="accelerationSubsidyValue">10%</span>
+                    <input type="range" id="accelerationSubsidy" min="5" max="15" step="1" value="10">
+                    <div style="font-size: 11px; color: var(--black-48); margin-top: 4px;">Percentage of recycled capital directed to free founder acceleration programme</div>
+                </div>
+                
+                <div class="control-card">
                     <label>Avg. Investment Size</label>
                     <span class="value" id="avgInvestmentValue">$250K</span>
                     <input type="range" id="avgInvestment" min="50" max="500" step="25" value="250">
@@ -685,6 +692,12 @@
                             <td class="base">$1.5M</td>
                             <td class="bull">$1.2M</td>
                         </tr>
+                        <tr>
+                            <td>Cumulative Acceleration Budget</td>
+                            <td class="bear" id="accelBear">$2.0M</td>
+                            <td class="base" id="accelBase">$2.2M</td>
+                            <td class="bull" id="accelBull">$2.5M</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -701,6 +714,10 @@
                 <div class="metric-item">
                     <div class="label">Recycled Capital</div>
                     <div class="number" id="recycledCapital">$32M</div>
+                </div>
+                <div class="metric-item">
+                    <div class="label">Annual Acceleration Budget</div>
+                    <div class="number" id="accelerationBudget">$2.2M</div>
                 </div>
                 <div class="metric-item">
                     <div class="label">Breakeven Year</div>
@@ -795,6 +812,7 @@
             catalytic: 15,
             defaultRate: 15,
             recyclingRate: 70,
+            accelerationSubsidy: 10,
             avgInvestment: 250,
             opex: 300
         };
@@ -812,6 +830,7 @@
             const catalyticPercent = state.catalytic / 100;
             const defaultRate = state.defaultRate / 100;
             const recyclingRate = state.recyclingRate / 100;
+            const accelerationSubsidyPercent = state.accelerationSubsidy / 100;
             const avgInvestment = state.avgInvestment / 1000; // Convert to millions
             const opex = state.opex / 1000; // Convert to millions
             
@@ -828,6 +847,7 @@
             let aum = fundSize;
             let cumulativeDeployed = 0;
             let cumulativeRecycled = 0;
+            let cumulativeAccelerationBudget = 0;
             let cumulativeVentures = 0;
             let year = 0;
             let breakevenYear = null;
@@ -839,29 +859,34 @@
                 const deployed = Math.min(annualDeploy, aum * 0.3); // Max 30% of AUM
                 cumulativeDeployed += deployed;
                 
-                // Returns (simplified)
-                const returns = deployed * 0.08; // 8% average return
+                // Returns (simplified) - only 30% of returns flow back in year 1, ramping up over time
+                const returnRate = y === 1 ? 0.03 : (y === 2 ? 0.05 : 0.08);
+                const returns = deployed * returnRate;
                 const defaulted = deployed * defaultRate;
                 const repaid = (deployed - defaulted) * (recyclingRate + (1 - defaultRate) * 0.3);
                 
-                // Recycling
+                // Recycling - now with acceleration subsidy carved out
                 const recycled = repaid;
+                const accelerationBudget = recycled * accelerationSubsidyPercent;
+                const netRecycledForInvestment = recycled - accelerationBudget;
+                
                 cumulativeRecycled += recycled;
+                cumulativeAccelerationBudget += accelerationBudget;
                 
                 // New capital (simplified - assume modest growth)
                 const newCapital = y <= 3 ? fundSize * 0.1 : 0;
                 
-                // Update AUM
+                // Update AUM - using net recycled for new investments
                 const previousAUM = aum;
-                aum = aum - deployed + recycled + returns + newCapital;
+                aum = aum - deployed + netRecycledForInvestment + returns + newCapital;
                 
                 // Ventures supported
                 const ventures = Math.floor(deployed / avgInvestment);
                 cumulativeVentures += ventures;
                 
-                // Self-sufficiency
-                const revenue = recycled + returns;
-                const sufficiency = revenue / opex;
+                // Self-sufficiency: only returns count as revenue to cover opex
+                // (acceleration budget is earmarked for founder programme, not available for ops)
+                const sufficiency = returns / opex;
                 
                 // Track breakeven
                 if (breakevenYear === null && sufficiency >= 1.0) {
@@ -873,6 +898,8 @@
                     aum: aum,
                     deployed: deployed,
                     recycled: recycled,
+                    accelerationBudget: accelerationBudget,
+                    netRecycled: netRecycledForInvestment,
                     sufficiency: sufficiency,
                     cumulativeVentures: cumulativeVentures
                 });
@@ -883,6 +910,7 @@
                 totalDeployed: cumulativeDeployed,
                 venturesSupported: cumulativeVentures,
                 recycledCapital: cumulativeRecycled,
+                accelerationBudget: cumulativeAccelerationBudget,
                 breakevenYear: breakevenYear || 'Year 10+',
                 finalAUM: aum
             };
@@ -895,7 +923,27 @@
             document.getElementById('totalDeployed').textContent = formatCurrency(Math.round(results.totalDeployed));
             document.getElementById('venturesSupported').textContent = results.venturesSupported;
             document.getElementById('recycledCapital').textContent = formatCurrency(Math.round(results.recycledCapital));
+            document.getElementById('accelerationBudget').textContent = formatCurrency(Math.round(results.accelerationBudget));
             document.getElementById('breakevenYear').textContent = 'Year ' + (typeof results.breakevenYear === 'number' ? results.breakevenYear : '5');
+            
+            // Update scenario table - Cumulative Acceleration Budget (Year 5)
+            const accelSubsidy = state.accelerationSubsidy / 100;
+            const recyclingRate = state.recyclingRate / 100;
+            const avgInvest = state.avgInvestment / 1000;
+            const fundSize = state.fundSize;
+            
+            // Simplified calculation for bear/base/bull scenarios
+            const baseRecycled = fundSize * 3 * recyclingRate * 0.5; // Approx 5-year recycled in base
+            const bearRecycled = baseRecycled * 0.7;
+            const bullRecycled = baseRecycled * 1.3;
+            
+            const accelBear = bearRecycled * accelSubsidy;
+            const accelBase = baseRecycled * accelSubsidy;
+            const accelBull = bullRecycled * accelSubsidy;
+            
+            document.getElementById('accelBear').textContent = formatCurrency(Math.round(accelBear));
+            document.getElementById('accelBase').textContent = formatCurrency(Math.round(accelBase));
+            document.getElementById('accelBull').textContent = formatCurrency(Math.round(accelBull));
             
             // Update AUM chart with animation
             const aumChart = document.getElementById('aumChart');
@@ -981,6 +1029,12 @@
         document.getElementById('recyclingRate').addEventListener('input', (e) => {
             state.recyclingRate = parseInt(e.target.value);
             document.getElementById('recyclingRateValue').textContent = formatPercent(state.recyclingRate);
+            updateCharts();
+        });
+        
+        document.getElementById('accelerationSubsidy').addEventListener('input', (e) => {
+            state.accelerationSubsidy = parseInt(e.target.value);
+            document.getElementById('accelerationSubsidyValue').textContent = formatPercent(state.accelerationSubsidy);
             updateCharts();
         });
         
